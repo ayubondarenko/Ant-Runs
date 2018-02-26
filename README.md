@@ -13,15 +13,15 @@ to the right (x + 1, y), one cell per step.
 
 Cells in which the sum of the digits in the X coordinate plus the sum of the digits in
 
-the Y coordinate is greater than 25 unavailable
+the Y coordinate is greater than 25 is unavailable for an ant. 
 
-an ant. For example, a cell with coordinates (59, 79) is not available, because
+For example, a cell with coordinates (59, 79) is not available, because
 
 5 + 9 + 7 + 9 = 30, which is more than 25.
 
  
 
-How many cells can an ant visit if its initial position (1000,1000), (including the initial cage).
+How many cells can an ant visit if its initial position (1000,1000), (including the initial cell).
 
 
 It is necessary to find a number of cells and write a script in the language
