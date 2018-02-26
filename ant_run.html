@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+</head>
+<body>
+<canvas  id='squareCanvas'>Обновите браузер</canvas>
+
+<script type="application/javascript">
+    /**
+     * Created by alexander on 24.02.18.
+     */
+
+    const xBegin = 1000;
+    const yBegin = 1000;
+    const maxNumbersSum = 25;
+
+    const timeStart = new Date();
+    let numberOfCells = 0;
+    const cellsPassed = {};
+    const cellsNotPassed = {};
+    const sqSize = getSquareSize();
+    const dCell = 5;
+    const cellBegin = {x: xBegin, y: yBegin,prevKey:''};
+    let currentCell = cellBegin;
+    let previousCell = cellBegin;
+
+    let recorded = false;
+
+    const square = document.getElementById("squareCanvas");
+    square.width = (sqSize.xMax - sqSize.xMin) * dCell;
+    square.height = (sqSize.yMax - sqSize.yMin) * dCell;
+    const ctx = square.getContext('2d');
+    ctx.clearRect(0, 0, square.width, square.height);
+    ctx.beginPath();
+
+    // прохожусь по записаным и не проверенным клеткам и  проверяю их. Если что-то записано то опять хожу
+
+    let recAnimation;
+    let requestAnimationFrame = window.requestAnimationFrame;
+    // || window.mozRequestAnimationFrame ||
+    // window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+    // currentCell = cellsNotPassed[Object.keys(cellsNotPassed)[0]];
+
+    function drawCell() {
+        savePassedCell();
+        drawCurrentCell();
+        previousCell = currentCell;
+        currentCell = getNextNotPassedCell();
+        if (currentCell) {
+            // setTimeout(() => requestAnimationFrame(drawCell), 50);
+            requestAnimationFrame(drawCell);
+        }
+        else {
+            const timeFinish = new Date();
+            console.log('закончил считать клетки:', numberOfCells);
+            console.log(' Выполнял:', (timeFinish.getTime() - timeStart.getTime()) / 1000, ' секунд');
+        }
+    }
+    drawCell();
+
+
+    // процедуры ************************************************
+
+
+    function getNextNotPassedCell() {
+        const key = '' + currentCell.x + currentCell.y;
+        if (isNotPassedGoodCell(currentCell.x, currentCell.y - 1))
+            return {x: currentCell.x, y: currentCell.y - 1, prevKey: key};
+
+        if (isNotPassedGoodCell(currentCell.x - 1, currentCell.y)) {
+            return {x: currentCell.x - 1, y: currentCell.y, prevKey: key};
+        }
+
+        if (isNotPassedGoodCell(currentCell.x + 1, currentCell.y)) {
+            return {x: currentCell.x + 1, y: currentCell.y, prevKey: key};
+        }
+
+        if (isNotPassedGoodCell(currentCell.x, currentCell.y + 1)) {
+            return {x: currentCell.x, y: currentCell.y + 1, prevKey: key};
+        }
+
+        return cellsPassed[currentCell.prevKey];
+    }
+
+    function isNotPassedGoodCell(x, y) {
+        let key = '' + x + '' + y;
+        if (!cellsPassed[key]) {
+            return getNumbersSum(key) <= maxNumbersSum;
+        }
+        return false;
+    }
+
+
+    // нарисовать прямоугольник
+    function drawRect(x, y, color) {
+        const x1 = (x - sqSize.xMin) * dCell;
+        const y1 = (y - sqSize.yMin) * dCell;
+        ctx.fillStyle = color;
+        ctx.fillRect(x1, y1, dCell, dCell);
+    }
+
+    function drawCurrentCell() {
+        drawRect(previousCell.x, previousCell.y, "aqua");
+        drawRect(currentCell.x, currentCell.y, "black");
+    }
+
+    //вычисляю максимальную координату
+    function getSquareSize() {
+        let xMax = xBegin;
+        let xMin = xBegin;
+        let yMax = yBegin;
+        let yMin = yBegin;
+
+        let x = xBegin;
+        let y = yBegin;
+        do {
+            if (xMax < x) xMax = x;
+            x++;
+        } while (getNumbersSum('' + x + '' + yBegin) <= maxNumbersSum);
+        x = xBegin;
+        do {
+            if (xMin > x) xMin = x;
+            x--;
+        } while (getNumbersSum('' + x + '' + yBegin) <= maxNumbersSum);
+
+        do {
+            if (yMax < y) yMax = y;
+            y++;
+        } while (getNumbersSum('' + xBegin + '' + y) <= maxNumbersSum);
+        y = yBegin;
+        do {
+            if (yMin > y) yMin = y;
+            y--;
+        } while (getNumbersSum('' + xBegin + '' + y) <= maxNumbersSum);
+
+        return {
+            xMax: xMax,
+            xMin: xMin,
+            yMax: yMax,
+            yMin: yMin
+        }
+    }
+
+
+    //вычисление суммы членов числа
+    function getNumbersSum(str) {
+        const arr = str.match(/\d/g);
+        let sum = 0;
+        arr.map((n) => {
+            sum += +n;
+        });
+        return sum;
+    }
+
+
+    //записываю клетку в пройденные
+    function savePassedCell() {
+
+        let key = '' + currentCell.x + currentCell.y;
+        if (!cellsPassed[key]) {
+            currentCell.prevKey = '' + previousCell.x + previousCell.y;
+            cellsPassed[key] = currentCell;
+            numberOfCells++;
+        }
+    }
+
+
+
+
+
+</script>
+
+</body>
+</html>
