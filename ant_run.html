@@ -50,14 +50,14 @@
         drawCurrentCell();
         previousCell = currentCell;
         currentCell = getNextNotPassedCell();
-        if (currentCell) {
+        if (currentCell != previousCell) {
             // setTimeout(() => requestAnimationFrame(drawCell), 50);
             requestAnimationFrame(drawCell);
         }
         else {
             const timeFinish = new Date();
-            console.log('закончил считать клетки:', numberOfCells);
-            console.log(' Выполнял:', (timeFinish.getTime() - timeStart.getTime()) / 1000, ' секунд');
+            console.log('Муравей закончил ползать и считать клетки:', numberOfCells);
+            console.log(' Выполнял:', (timeFinish.getTime() - timeStart.getTime()) / 1000/60/60, ' часов');
         }
     }
     drawCell();
